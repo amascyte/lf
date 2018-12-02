@@ -505,12 +505,17 @@ Definition manual_grade_for_bag_theorem : option (prod nat string) := None.
     requires techniques you haven't learned yet.  Feel free to ask for
     help if you get stuck! *)
 
-(*
-Theorem bag_theorem : ...
+
+Theorem bag_theorem : forall n t : nat, forall s : bag,
+  count n s = t -> count n (add n s) = S t.
 Proof.
-  ...
+  intros n t s.
+  intros H.
+  induction s.
+  - simpl. rewrite <- beq_nat_refl. rewrite <- H. simpl. reflexivity.
+  - simpl. rewrite <- beq_nat_refl. rewrite <- H. reflexivity.
 Qed.
-*)
+
 
 (** [] *)
 
@@ -832,17 +837,31 @@ Proof.
 Theorem app_nil_r : forall l : natlist,
   l ++ [] = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l.
+  induction l as [ | n l' iHl'].
+  - (* [] case *)
+  simpl. reflexivity.
+  - (* n::l' case *)
+  simpl. rewrite -> iHl'. reflexivity.
+Qed. 
 
 Theorem rev_app_distr: forall l1 l2 : natlist,
   rev (l1 ++ l2) = rev l2 ++ rev l1.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2.
+  induction l1 as [ | n l1' IHl1].
+  - simpl. rewrite -> app_nil_r. reflexivity.
+  - simpl. rewrite -> IHl1. rewrite -> app_assoc. reflexivity.
+Qed.
 
 Theorem rev_involutive : forall l : natlist,
   rev (rev l) = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l.
+  induction l as [ | n l' IHl'].
+  - simpl. reflexivity.
+  - simpl. rewrite -> rev_app_distr. rewrite -> IHl'. simpl. reflexivity.
+Qed.
 
 (** There is a short solution to the next one.  If you find yourself
     getting tangled up, step back and try to look for a simpler
