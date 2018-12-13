@@ -525,12 +525,24 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
     checking your answers in Coq:
     - What is the type of [combine] (i.e., what does [Check
       @combine] print?)
+      Ans: 
+combine
+     : list ?X -> list ?Y -> list (?X * ?Y)
+where
+?X : [ |- Type]
+?Y : [ |- Type]
     - What does
 
         Compute (combine [1;2] [false;false;true;true]).
 
-      print? *)
+      print? 
+      Ans:
+      [(1, false); (2, false)]
+
 (** [] *)
+Check combine.
+Compute (combine [1;2] [false;false;true;true]).
+*)
 
 (** **** Exercise: 2 stars, recommended (split)  *)
 (** The function [split] is the right inverse of [combine]: it takes a
