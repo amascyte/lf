@@ -552,14 +552,32 @@ Compute (combine [1;2] [false;false;true;true]).
     Fill in the definition of [split] below.  Make sure it passes the
     given unit test. *)
 
+Fixpoint retXs {X Y: Type} (l : list (X*Y))
+                : (list _) :=
+match l with 
+  | [] => []
+  | (x, _) :: xs => x :: retXs (xs)
+end.
+
+Fixpoint retYs {X Y: Type} (l : list (X*Y))
+                : (list _) :=
+  match l with 
+  | [] => []
+  | (_, y) :: ys => y :: retYs (ys)
+  end.
+
+
+Compute (retXs [(1,false);(2,false)]).
+Compute (retYs [(1,false);(2,false)]).
+
 Fixpoint split {X Y : Type} (l : list (X*Y))
-               : (list X) * (list Y)
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+               : (list X) * (list Y) :=
+  (retXs l, retYs l).
 
 Example test_split:
   split [(1,false);(2,false)] = ([1;2],[false;false]).
 Proof.
-(* FILL IN HERE *) Admitted.
+  simpl. reflexivity. Qed. 
 (** [] *)
 
 (* ================================================================= *)
@@ -604,8 +622,11 @@ Proof. reflexivity. Qed.
     [hd_error] function from the last chapter. Be sure that it
     passes the unit tests below. *)
 
-Definition hd_error {X : Type} (l : list X) : option X
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition hd_error {X : Type} (l : list X) : option X :=
+  match l with
+  | [] => None
+  | x :: xs => Some x
+  end.
 
 (** Once again, to force the implicit arguments to be explicit,
     we can use [@] before the name of the function. *)
@@ -613,9 +634,9 @@ Definition hd_error {X : Type} (l : list X) : option X
 Check @hd_error.
 
 Example test_hd_error1 : hd_error [1;2] = Some 1.
- (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 Example test_hd_error2 : hd_error  [[1];[2]]  = Some [1].
- (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 (** [] *)
 
 (* ################################################################# *)
