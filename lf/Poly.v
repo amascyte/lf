@@ -1025,15 +1025,22 @@ Proof. reflexivity. Qed.
 Theorem fold_length_correct : forall X (l : list X),
   fold_length l = length l.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros X l.
+  induction l as [ | n l' IHl'].
+  - simpl. reflexivity. 
+  - simpl. rewrite <- IHl'. reflexivity. 
+Qed. 
 (** [] *)
 
 (** **** Exercise: 3 stars (fold_map)  *)
 (** We can also define [map] in terms of [fold].  Finish [fold_map]
     below. *)
 
-Definition fold_map {X Y: Type} (f: X -> Y) (l: list X) : list Y
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition fold_map {X Y: Type} (f: X -> Y) (l: list X) : list Y :=
+  fold (fun x y => f x :: y) l [].
+
+Definition fold_map' {X Y: Type} (f: X -> Y) (l: list X) : list Y :=
+  fold (fun x y => [f x] ++ y) l [].
 
 (** Write down a theorem [fold_map_correct] in Coq stating that
    [fold_map] is correct, and prove it. *)
