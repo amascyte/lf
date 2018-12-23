@@ -1042,10 +1042,19 @@ Definition fold_map {X Y: Type} (f: X -> Y) (l: list X) : list Y :=
 Definition fold_map' {X Y: Type} (f: X -> Y) (l: list X) : list Y :=
   fold (fun x y => [f x] ++ y) l [].
 
+Compute (fold_map (fun x => x + 1)) [0; 1; 2].
+
 (** Write down a theorem [fold_map_correct] in Coq stating that
    [fold_map] is correct, and prove it. *)
 
-(* FILL IN HERE *)
+Theorem fold_map_correct : forall X Y (f: X -> Y) (l: list X),
+  fold_map f l = map f l.
+Proof. 
+  intros X Y f l.
+  induction l as [ | n l' IHl']. 
+  - simpl. reflexivity. 
+  - simpl. rewrite <- IHl'. reflexivity. 
+Qed. 
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_fold_map : option (prod nat string) := None.
@@ -1074,8 +1083,8 @@ Definition prod_curry {X Y Z : Type}
     the theorems below to show that the two are inverses. *)
 
 Definition prod_uncurry {X Y Z : Type}
-  (f : X -> Y -> Z) (p : X * Y) : Z
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+  (f : X -> Y -> Z) (p : X * Y) : Z := 
+  (f (fst p)) (snd p).
 
 (** As a (trivial) example of the usefulness of currying, we can use it
     to shorten one of the examples that we saw above: *)
@@ -1094,13 +1103,17 @@ Theorem uncurry_curry : forall (X Y Z : Type)
                         x y,
   prod_curry (prod_uncurry f) x y = f x y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X Y Z f x y.
+  simpl. reflexivity. Qed. 
 
 Theorem curry_uncurry : forall (X Y Z : Type)
                         (f : (X * Y) -> Z) (p : X * Y),
   prod_uncurry (prod_curry f) p = f p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X Y Z f p.
+  destruct p.
+  simpl. reflexivity. Qed.
+
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (nth_error_informal)  *)
@@ -1116,7 +1129,6 @@ Proof.
 
    forall X n l, length l = n -> @nth_error X l n = None
 *)
-(* FILL IN HERE *)
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_informal_proof : option (prod nat string) := None.
@@ -1163,46 +1175,46 @@ Definition three : nat := @doit3times.
 
 (** Successor of a natural number: *)
 
-Definition succ (n : nat) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition succ (n : nat) : nat := 
+  fun (X: Type) (f: X-> X) (x:X) =>  n X f (f x).
 
 Example succ_1 : succ zero = one.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example succ_2 : succ one = two.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example succ_3 : succ two = three.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 (** Addition of two natural numbers: *)
 
-Definition plus (n m : nat) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition plus (n m : nat) : nat :=
+  fun (X: Type) (f: X -> X) (x: X) => n X f (m X f x).
 
 Example plus_1 : plus zero one = one.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example plus_2 : plus two three = plus three two.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example plus_3 :
   plus (plus two two) three = plus one (plus three three).
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 (** Multiplication: *)
 
-Definition mult (n m : nat) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition mult (n m : nat) : nat :=
+  fun (X: Type) (f: X -> X) (x: X) => n X (m X f) x.
 
 Example mult_1 : mult one one = one.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example mult_2 : mult zero (plus three three) = zero.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example mult_3 : mult two three = plus three three.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 (** Exponentiation: *)
 
@@ -1211,17 +1223,17 @@ Proof. (* FILL IN HERE *) Admitted.
     a "Universe inconsistency" error, try iterating over a different
     type: [nat] itself is usually problematic.) *)
 
-Definition exp (n m : nat) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition exp (n m : nat) : nat :=
+  fun X =>  m (X -> X) (n X).
 
 Example exp_1 : exp two two = plus two two.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example exp_2 : exp three two = plus (mult two (mult two two)) one.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 Example exp_3 : exp three zero = one.
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 
 End Church.
 
