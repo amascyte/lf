@@ -73,7 +73,8 @@ Theorem silly_ex :
      oddb 3 = true ->
      evenb 4 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros eq1 eq2.
+  apply eq2. Qed.
 (** [] *)
 
 (** To use the [apply] tactic, the (conclusion of the) fact
@@ -105,7 +106,17 @@ Theorem rev_exercise1 : forall (l l' : list nat),
      l = rev l' ->
      l' = rev l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l l' eq1.
+  rewrite -> eq1. rewrite -> rev_involutive. reflexivity. 
+  Qed.
+
+Theorem rev_exercise1' : forall (l l' : list nat),
+  l = rev l' ->
+  l' = rev l.
+Proof.
+  intros l l' eq1. 
+  symmetry. rewrite -> eq1. apply rev_involutive. 
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, optional (apply_rewrite)  *)
@@ -172,7 +183,10 @@ Example trans_eq_exercise : forall (n m o p : nat),
      (n + p) = m ->
      (n + p) = (minustwo o).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o p eq1 eq2. 
+  apply trans_eq with m. 
+  apply eq2. apply eq1. 
+  Qed. 
 (** [] *)
 
 (* ################################################################# *)
@@ -221,8 +235,7 @@ Proof.
     present example, this amounts to adding a new hypothesis [H1 : n =
     m] and replacing [n] by [m] in the goal. *)
 
-  inversion H.
-  reflexivity.
+  injection H. intros Hmn. apply Hmn. 
 Qed.
 
 (** Here's a more interesting example that shows how multiple
@@ -232,7 +245,9 @@ Theorem inversion_ex1 : forall (n m o : nat),
   [n; m] = [o; o] ->
   [n] = [m].
 Proof.
-  intros n m o H. inversion H. reflexivity. Qed.
+  intros n m o H. injection H. 
+  intros H1 H2. rewrite -> H1. rewrite <- H2. 
+  reflexivity. Qed. 
 
 (** We can name the equations that [inversion] generates with an
     [as ...] clause: *)
@@ -241,7 +256,7 @@ Theorem inversion_ex2 : forall (n m : nat),
   [n] = [m] ->
   n = m.
 Proof.
-  intros n m H. inversion H as [Hnm]. reflexivity.  Qed.
+  intros n m H. injection H as Hnm. rewrite Hnm. reflexivity. Qed.
 
 (** **** Exercise: 1 star (inversion_ex3)  *)
 Example inversion_ex3 : forall (X : Type) (x y z w : X) (l j : list X),
@@ -249,7 +264,10 @@ Example inversion_ex3 : forall (X : Type) (x y z w : X) (l j : list X),
   x :: l = z :: j ->
   x = y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros t x y z w l j H1 H2. 
+  injection H1 as H1mn. injection H2 as H2mn. 
+  rewrite -> H. rewrite -> H2mn. reflexivity. Qed. 
+ 
 (** [] *)
 
 (** When used on a hypothesis involving an equality between
@@ -281,7 +299,7 @@ Proof.
     the subgoal we are working on is impossible, and therefore removes
     it from further consideration. *)
 
-    intros H. inversion H. Qed.
+    intros H. discriminate H. Qed.
 
 (** This is an instance of a logical principle known as the _principle
     of explosion_, which asserts that a contradictory hypothesis
@@ -291,13 +309,13 @@ Theorem inversion_ex4 : forall (n : nat),
   S n = O ->
   2 + 2 = 5.
 Proof.
-  intros n contra. inversion contra. Qed.
+  intros n contra. discriminate contra. Qed.
 
 Theorem inversion_ex5 : forall (n m : nat),
   false = true ->
   [n] = [m].
 Proof.
-  intros n m contra. inversion contra. Qed.
+  intros n m contra. discriminate contra. Qed.
 
 (** If you find the principle of explosion confusing, remember
     that these proofs are not actually showing that the conclusion of
@@ -313,7 +331,8 @@ Example inversion_ex6 : forall (X : Type)
   y :: l = z :: j ->
   x = z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros t x y z l j H1 H2. 
+  discriminate H1. Qed. 
 (** [] *)
 
 (** To summarize this discussion, suppose [H] is a hypothesis in the
