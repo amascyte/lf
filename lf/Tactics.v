@@ -418,12 +418,23 @@ Proof.
 (** Practice using "in" variants in this proof.  (Hint: use
     [plus_n_Sm].) *)
 
+Theorem equal_remove_S : forall n m,
+  n = m -> S n = S m.
+  intros n m eq.
+  rewrite eq.
+  reflexivity.
+Qed.
+
 Theorem plus_n_n_injective : forall n m,
      n + n = m + m ->
      n = m.
 Proof.
   intros n. induction n as [| n'].
-  (* FILL IN HERE *) Admitted.
+  - destruct m. reflexivity. intros H. discriminate H.
+  - destruct m as [|m']. intros H. discriminate H.
+  intros H. apply equal_remove_S. apply IHn'. simpl in H.
+  inversion H. rewrite <- plus_n_Sm in H1. rewrite <- plus_n_Sm in H1. 
+  inversion H1. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -566,7 +577,7 @@ Proof.
     performed automatically by the [apply] in the next step), then
     [IHn'] gives us exactly what we need to finish the proof. *)
 
-      apply IHn'. inversion eq. reflexivity. Qed.
+      apply IHn'. injection eq as goal. apply goal. Qed.
 
 (** What you should take away from all this is that we need to be
     careful about using induction to try to prove something too
@@ -579,7 +590,14 @@ Proof.
 Theorem beq_nat_true : forall n m,
     beq_nat n m = true -> n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n'].
+  - (* n = O *)  intros m eq. destruct m as [| m'] eqn:E.
+    + (* m = O *) simpl. reflexivity.
+    + (* m = S m' *) discriminate eq.
+  - (* n = S n' *) intros m eq. destruct m as [| m'] eqn:E.
+    + (* m = O *) discriminate eq.
+    + (* m = S m' *) apply IHn' in eq. rewrite eq. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (beq_nat_true_informal)  *)
@@ -646,7 +664,9 @@ Proof.
   - (* m = S m' *) intros n eq. destruct n as [| n'].
     + (* n = O *) inversion eq.
     + (* n = S n' *) apply f_equal.
-      apply IHm'. inversion eq. reflexivity. Qed.
+      apply IHm'. injection eq as goal. apply goal. Qed.
+      (*injection eq as goal. apply IHm' in goal. rewrite goal. reflexivity.
+Qed.*)
 
 (** Let's look at an informal proof of this theorem.  Note that
     the proposition we prove by induction leaves [n] quantified,
@@ -707,7 +727,13 @@ Theorem nth_error_after_last: forall (n : nat) (X : Type) (l : list X),
      length l = n ->
      nth_error l n = None.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n t l. generalize dependent n.
+  induction l as [ | h' l'].
+  - intros n eq. reflexivity.
+  - intros n eq. induction n as [ | n'].
+    + discriminate eq.
+    + apply S_injective in eq. apply IHl' in eq. apply eq.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -890,7 +916,12 @@ Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
   split l = (l1, l2) ->
   combine l1 l2 = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X Y l.
+  induction l as [ | p l'].
+  - intros l1 l2 H. inversion H. reflexivity.
+  - intros l1 l2 H. inversion H. destruct p as [x y].
+    destruct (split l') as [xs' ys']. inversion H1.
+    simpl. rewrite IHl'. reflexivity. reflexivity. Qed.
 (** [] *)
 
 (** However, [destruct]ing compound expressions requires a bit of
@@ -961,7 +992,19 @@ Theorem bool_fn_applied_thrice :
   forall (f : bool -> bool) (b : bool),
   f (f (f b)) = f b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f b.
+  destruct (f b) eqn: Eq1.
+  - destruct b eqn: Eq2.
+    + rewrite Eq1. rewrite Eq1. reflexivity.
+    + destruct (f true) eqn: Eq3.
+      { rewrite Eq3. reflexivity. }
+      { apply Eq1. }
+  - destruct b.
+    + destruct (f false) eqn: Eq4.
+      { rewrite Eq1. reflexivity. }
+      { apply Eq4. }
+    + rewrite Eq1. rewrite Eq1. reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)

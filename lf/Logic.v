@@ -90,7 +90,7 @@ Definition injective {A B} (f : A -> B) :=
 
 Lemma succ_inj : injective S.
 Proof.
-  intros n m H. inversion H. reflexivity.
+  intros n m H. injection H as H1. apply H1.
 Qed.
 
 (** The equality operator [=] is also a function that returns a
@@ -126,7 +126,7 @@ Proof.
   (* WORKED IN CLASS *)
   split.
   - (* 3 + 4 = 7 *) reflexivity.
-  - (* 2 + 2 = 4 *) reflexivity.
+  - (* 2 * 2 = 4 *) reflexivity.
 Qed.
 
 (** For any propositions [A] and [B], if we assume that [A] is true
@@ -156,7 +156,15 @@ Qed.
 Example and_exercise :
   forall n m : nat, n + m = 0 -> n = 0 /\ m = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m H. apply and_intro.
+  { induction n as [ | n'].
+  - reflexivity.
+  - discriminate. }
+  { induction m as [ | m'].
+  - reflexivity.
+  - rewrite plus_comm in H. inversion H. }
+Qed.
+
 (** [] *)
 
 (** So much for proving conjunctive statements.  To go in the other
@@ -231,7 +239,10 @@ Proof.
 Lemma proj2 : forall P Q : Prop,
   P /\ Q -> Q.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q H.
+  destruct H as [Hp Hq].
+  apply Hq. 
+Qed.
 (** [] *)
 
 (** Finally, we sometimes need to rearrange the order of conjunctions
@@ -257,7 +268,12 @@ Theorem and_assoc : forall P Q R : Prop,
   P /\ (Q /\ R) -> (P /\ Q) /\ R.
 Proof.
   intros P Q R [HP [HQ HR]].
-  (* FILL IN HERE *) Admitted.
+  split.
+  - split.
+    + apply HP.
+    + apply HQ.
+  - apply HR.
+Qed.
 (** [] *)
 
 (** By the way, the infix notation [/\] is actually just syntactic
@@ -321,14 +337,25 @@ Qed.
 Lemma mult_eq_0 :
   forall n m, n * m = 0 -> n = 0 \/ m = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m H.
+  destruct n as [ | n'] eqn:E.
+  - left. reflexivity.
+  - right. 
+    destruct m as [ | m'].
+    + reflexivity.
+    + discriminate.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 1 star (or_commut)  *)
 Theorem or_commut : forall P Q : Prop,
   P \/ Q  -> Q \/ P.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q [Hp | Hq].
+  - right. apply Hp.
+  - left. apply Hq.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
